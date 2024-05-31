@@ -1,0 +1,36 @@
+---
+- name: Setup VM and run Python project
+  hosts: proxmox_vms
+  become: true
+
+  tasks:
+    - name: Update apt repository and install Python
+      apt:
+        update_cache: yes
+        name: python3
+        state: present
+
+    - name: Install pip
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Create project directory
+      file:
+        path: /opt/my_python_project
+        state: directory
+        mode: '0755'
+
+    - name: Copy Python project files
+      copy:
+        src: /local/path/to/your/python/project/
+        dest: /opt/app/
+        mode: '0755'
+
+    - name: Install Python dependencies
+      pip:
+        requirements: /opt/app/requirements.txt
+        executable: pip3
+
+    - name: Run the Python project
+      command: python3 /opt/app/app.py

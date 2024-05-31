@@ -1,0 +1,41 @@
+<h3 class="title is-3" style="text-align: center;">Список</h3>
+
+<table class="table" id="table-class" style="margin: auto;">
+    <div class="columns is-centered">
+        <div class="column is-4">
+            <div class="field">
+                <p class="control has-icons-left has-icons-right">
+                    <input class="input" id="searchbar-tab" type="text" placeholder="Поиск">
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-search"></i> </span>
+                </p>
+            </div>
+        </div>
+        <thead>
+            <tr>
+                <!-- <th><abbr title="Position">Pos</abbr></th> -->
+                <th>Класс</th>
+                <th>ОС</th>
+                <th>Добавлена</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody class="classTable">
+        {% for classe in liste_classes_os %}
+        <tr>
+            <!-- <th>{{loop.index}}</th> -->
+            <td>{{classe['classe']}}</td>
+            <td>{{classe['os']}}</td>
+            <td>{{classe['date_crea']}}</td>
+            <td>
+                <div class="buttons">
+                    <button class="button is-info details-row">
+                        <a style="color: white!important;" href="/details?classe={{classe['classe']}}&os={{classe['os']}}">Детали</a>
+                    </button>
+                    <button class="button is-danger delete-row">Удалить</button>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+</table>

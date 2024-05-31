@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs for {{ source_id }}</title>
+    <link href="/static/bootstrap.css" rel="stylesheet">
+    <script src="/static/jquery.js"></script>
+    <script src="/static/socket.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Logs for {{ source_id }}</h1>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Message</th>
+                <th>Detail</th>
+                <th>Source ID</th>
+            </tr>
+        </thead>
+        <tbody id="logs-body">
+            <!-- Logs will be appended here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var socket = io();
+
+        socket.on('connected', function(data) {
+            console.log(data);
+            socket.emit('join', {'source_id': '{{ source_id }}'});
+        });
+
+        socket.on('logs', function(logs) {
+            $('#logs-body').empty();
+            logs.forEach(function(log) {
+                $('#logs-body').append(`
+                    <tr>
+                        <td>${log.id}</td>
+                        <td>${log.log_type}</td>
+                        <td>${log.message}</td>
+                        <td>${log.detail}</td>
+                        <td>${log.source_id}</td>
+                    </tr>
+                `);
+            });
+        });
+    });
+</script>
+</body>
+</html>

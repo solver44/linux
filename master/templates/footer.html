@@ -1,0 +1,131 @@
+<!-- <footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            esaip
+        </p>
+    </div>
+</footer> -->
+
+<script src="/static/js/jquery-3.5.1.js"></script>
+<script>
+    $(document).on('click', '.notification > button.delete', function () {
+        $(this).parent().addClass('is-hidden');
+        return false;
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        // Проверка на клик по иконке бургер-меню на навбаре
+        $(".navbar-burger").click(function () {
+
+            // Переключение класса "is-active" как на "navbar-burger", так и на "navbar-menu"
+            $(".navbar-burger").toggleClass("is-active");
+            $(".navbar-menu").toggleClass("is-active");
+
+        });
+    });
+</script>
+
+<script> // Поисковая строка
+    $(document).ready(function () {
+        $("#searchbar-tab").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $(".classTable tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+
+<script>
+    function generate_notif(message, couleur) { // генерация уведомлений
+        return `<p class="notification ${couleur}" role="alert"><strong>${message}</strong><br><button class="delete" type="button">Закрыть</button></p>`
+    }
+
+    $(document).ready(function () {
+
+
+
+        $("#upload-file").click(function () {
+
+            $('#upload-file').addClass('is-loading')
+
+            var fd = new FormData();
+            var files = $('.file-input')[0].files[0];
+            var class_e = $(".select-class").children("option:selected").val().toString();
+            var os = $(".select-os").children("option:selected").val().toString();
+            fd.append('file', files);
+            fd.append('os', os);
+            fd.append('class', class_e);
+
+
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: fd,
+                contentType: false,
+                processData: false,
+                statusCode: {
+                    201: function (response) {
+                        var classe_added = response["classe"]
+                        var date_added = response["date_crea"]
+                        var os_added = response["os"]
+
+                        $('#upload-file').removeClass('is-loading')
+
+                        $("#notif").append(generate_notif('VM создана', 'is-success'))
+
+                        var new_row = `<tr><td>${classe_added}</td><td>${os_added}</td><td>${date_added}</td><td><div class="buttons"><a style="color: white!important;" href="/details?classe=${classe_added}&os=${os_added}">Детали</a><button class="button is-danger delete-row">Удалить</button></div></td></tr>`;
+                        $("table tbody").append(new_row);
+
+                    },
+                    404: function (response) {
+                        $('#upload-file').removeClass('is-loading')
+
+                        $("#notif").append(generate_notif('Ошибка 404, повторите попытку', 'is-warning'))
+                    },
+                    409: function (response) {
+                        $('#upload-file').removeClass('is-loading')
+
+                        $("#notif").append(generate_notif('Ошибка 409, VM для этой ОС и этого класса уже существует, пожалуйста, удалите её перед созданием новой', 'is-danger'))
+                    }
+                }
+
+            });
+        });
+    });
+
+    // код для чтения данных выбранной строки таблицы (значений ячеек).
+    $("#table-class").on('click', '.delete-row', function () {
+        // получить текущую строку
+        var currentRow = $(this).closest("tr");
+
+        var classe = currentRow.find("td:eq(0)").text(); // получить значение 1-й ячейки текущей строки
+        var os = currentRow.find("td:eq(1)").text(); // получить значение 2-й ячейки текущей строки
+        var date = currentRow.find("td:eq(2)").text(); // получить значение 3-й ячейки текущей строки
+
+        $.ajax({
+            url: '/delete',
+            type: 'PUT',
+            data: JSON.stringify({
+                'classe': classe,
+                'os': os,
+                'date': date,
+            }),
+            contentType: "application/json; charset=utf-8",
+            processData: false,
+            statusCode: {
+                201: function (response) {
+                    currentRow.remove()
+
+                },
+                500: function (response) {
+                    $("#notif").append(generate_notif('Ошибка', 'is-danger'))
+                }
+
+            }
+        });
+    });
+
+</script>

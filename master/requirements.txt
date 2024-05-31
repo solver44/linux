@@ -1,0 +1,15 @@
+certifi==2020.6.20
+chardet==3.0.4
+charset-normalizer==3.3.2
+click==7.1.2
+Flask==1.1.2
+Flask-BasicAuth==0.2.0
+idna==2.10
+itsdangerous==1.1.0
+MarkupSafe==1.1.1
+proxmoxer==2.0.1
+python-terraform==0.10.1
+requests==2.32.3
+tinydb==4.1.1
+urllib3==2.2.1
+Werkzeug==1.0.1
